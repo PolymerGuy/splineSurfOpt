@@ -11,17 +11,20 @@ import (
 )
 
 func main() {
-	xs := arange(0., 1., 0.01)
+	xs := arange(-5, 5., 0.01)
 	ys := []float64{}
 	for _, x := range xs {
-		ys = append(ys, Forrester(x))
+		ys = append(ys, himmelbau(x))
 	}
 	serie := plottool.MakeXYs(xs, ys)
-	maxY, maxX := findMaxima()
+
+	initialGuess := arange(-5., 5., 2)
+	maxY, maxX := findMaxima(himmelbau,initialGuess)
 
 	maxima := plottool.MakeXYs([]float64{maxX}, []float64{maxY})
 	plottool.PlotSeries([]plotter.XYs{serie, maxima},"Results")
-	fmt.Println(findMaxima())
+
+	fmt.Println(argMax(ys))
 }
 
 func gauss(x float64) float64 {
@@ -52,20 +55,20 @@ func arange(min float64, max float64, step float64) []float64 {
 	return results
 }
 
-func findMaxima() (float64, float64) {
+func findMaxima(f func(float64)float64,initialGuess []float64) (float64, float64) {
 	tol :=1e-6
-	initialGuess := arange(0., 1., 0.3)
+
 	fmt.Println(initialGuess)
 	initialVals := []float64{}
 	for _, x := range initialGuess {
-		initialVals = append(initialVals, Forrester(x))
+		initialVals = append(initialVals, f(x))
 	}
 
 	vals := initialVals
 	inds := initialGuess
 	s := spline.Spline{}
 
-	maxit := 5
+	maxit := 8
 	it := 0
 	for {
 		indices := make([]int, len(inds))
@@ -87,7 +90,7 @@ func findMaxima() (float64, float64) {
 		maxInd, _ := argMax(results)
 
 		// Find minimum and its index
-		val := Forrester(seed[maxInd])
+		val := f(seed[maxInd])
 
 		if !containsElementWithinTol(inds,seed[maxInd],tol){
 			vals = append(vals, val)
@@ -104,6 +107,11 @@ func findMaxima() (float64, float64) {
 		}
 	}
 
+}
+
+func himmelbau(x float64)float64{
+	y:=2.0
+	return -math.Pow(math.Pow(x,2) +y-11,2)-math.Pow(x+math.Pow(y,2)-7,2)
 }
 
 func argMax(vals []float64) (int, float64) {

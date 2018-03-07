@@ -41,11 +41,12 @@ func Forrester(x float64) float64 {
 }
 
 func arange(min float64, max float64, step float64) []float64 {
-	results := []float64{min}
+	results := []float64{}
 	val := min
 	for val <= max {
-		val += step
 		results = append(results, val)
+		val += step
+
 
 	}
 	return results
@@ -53,7 +54,8 @@ func arange(min float64, max float64, step float64) []float64 {
 
 func findMaxima() (float64, float64) {
 	tol :=1e-6
-	initialGuess := arange(0., 1., 0.2)
+	initialGuess := arange(0., 1., 0.3)
+	fmt.Println(initialGuess)
 	initialVals := []float64{}
 	for _, x := range initialGuess {
 		initialVals = append(initialVals, Forrester(x))

@@ -20,17 +20,17 @@ func main() {
 	serie := plottool.MakeXYs(xs, ys)
 
 	initialGuess := maths.Arange(-5., 5., 2)
-	maxY, maxX := findMaxima(function,initialGuess)
+	maxY, maxX := minimize(function,initialGuess)
 
 	maxima := plottool.MakeXYs([]float64{maxX}, []float64{maxY})
 	plottool.PlotSeries([]plotter.XYs{serie, maxima},"Results")
 
-	fmt.Println(maths.ArgMax(ys))
+	fmt.Println(maths.ArgMin(ys))
 }
 
 
 
-func findMaxima(f func(float64)float64,initialGuess []float64) (float64, float64) {
+func minimize(f func(float64)float64,initialGuess []float64) (float64, float64) {
 	tol :=1e-6
 
 	fmt.Println(initialGuess)
@@ -62,7 +62,7 @@ func findMaxima(f func(float64)float64,initialGuess []float64) (float64, float64
 			results = append(results, s.Operate(x))
 		}
 
-		maxInd, _ := maths.ArgMax(results)
+		maxInd, _ := maths.ArgMin(results)
 
 		// Find minimum and its index
 		val := f(seed[maxInd])

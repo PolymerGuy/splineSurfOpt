@@ -5,16 +5,16 @@ import (
 	"math"
 )
 
-func ArgMax(vals []float64) (int, float64) {
-	max := vals[0]
-	maxInd := 0
+func ArgMin(vals []float64) (int, float64) {
+	min := vals[0]
+	minInd := 0
 	for index, val := range vals {
-		if val > max {
-			max = val
-			maxInd = index
+		if val < min {
+			min = val
+			minInd = index
 		}
 	}
-	return maxInd, max
+	return minInd, min
 }
 
 func SortBy(vals []float64, indices []int) []float64 {

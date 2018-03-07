@@ -11,15 +11,16 @@ import (
 )
 
 func main() {
-	xs := arange(-5, 5., 0.01)
+	function := himmelbau
+	xs := arange(-5, 5., 0.1)
 	ys := []float64{}
 	for _, x := range xs {
-		ys = append(ys, himmelbau(x))
+		ys = append(ys, function(x))
 	}
 	serie := plottool.MakeXYs(xs, ys)
 
 	initialGuess := arange(-5., 5., 2)
-	maxY, maxX := findMaxima(himmelbau,initialGuess)
+	maxY, maxX := findMaxima(function,initialGuess)
 
 	maxima := plottool.MakeXYs([]float64{maxX}, []float64{maxY})
 	plottool.PlotSeries([]plotter.XYs{serie, maxima},"Results")
@@ -35,7 +36,7 @@ func gauss(x float64) float64 {
 }
 
 func SixHumpCamelFunction(x float64) float64 {
-	return (4.0-2.1*x*x+math.Pow(x,4)/3.0)*x*x
+	return -(4.0-2.1*x*x+math.Pow(x,4)/3.0)*x*x
 }
 
 
@@ -98,9 +99,9 @@ func findMaxima(f func(float64)float64,initialGuess []float64) (float64, float64
 		}
 
 		fmt.Println(val, seed[maxInd])
-		serie := plottool.MakeXYs(seed,results)
-		filename := "Results"+fmt.Sprint(it)
-		plottool.PlotSeries([]plotter.XYs{serie},filename)
+		//serie := plottool.MakeXYs(seed,results)
+		//filename := "Results"+fmt.Sprint(it)
+		//plottool.PlotSeries([]plotter.XYs{serie},filename)
 		it++
 		if it >= maxit {
 			return val, seed[maxInd]

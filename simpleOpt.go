@@ -11,16 +11,16 @@ import (
 )
 
 func main() {
-	xs := arange(-5, 5, 0.1)
+	xs := arange(0., 1., 0.01)
 	ys := []float64{}
 	for _, x := range xs {
-		ys = append(ys, gauss(x))
+		ys = append(ys, Forrester(x))
 	}
 	serie := plottool.MakeXYs(xs, ys)
 	maxY, maxX := findMaxima()
 
 	maxima := plottool.MakeXYs([]float64{maxX}, []float64{maxY})
-	plottool.PlotSeries([]plotter.XYs{serie, maxima})
+	plottool.PlotSeries([]plotter.XYs{serie, maxima},"Results")
 	fmt.Println(findMaxima())
 }
 
@@ -29,6 +29,15 @@ func gauss(x float64) float64 {
 	b := 0.0
 	c := 0.5
 	return a * math.Exp(-math.Pow((x-b), 2)/(2*c*c))
+}
+
+func SixHumpCamelFunction(x float64) float64 {
+	return (4.0-2.1*x*x+math.Pow(x,4)/3.0)*x*x
+}
+
+
+func Forrester(x float64) float64 {
+	return -math.Pow(6.0*x-2.0,2)*math.Sin(12*x-4)
 }
 
 func arange(min float64, max float64, step float64) []float64 {
@@ -44,17 +53,17 @@ func arange(min float64, max float64, step float64) []float64 {
 
 func findMaxima() (float64, float64) {
 	tol :=1e-6
-	initialGuess := []float64{-2.0, -1., 0.7, 2.0}
+	initialGuess := arange(0., 1., 0.2)
 	initialVals := []float64{}
 	for _, x := range initialGuess {
-		initialVals = append(initialVals, gauss(x))
+		initialVals = append(initialVals, Forrester(x))
 	}
 
 	vals := initialVals
 	inds := initialGuess
 	s := spline.Spline{}
 
-	maxit := 10
+	maxit := 5
 	it := 0
 	for {
 		indices := make([]int, len(inds))
@@ -76,7 +85,7 @@ func findMaxima() (float64, float64) {
 		maxInd, _ := argMax(results)
 
 		// Find minimum and its index
-		val := gauss(seed[maxInd])
+		val := Forrester(seed[maxInd])
 
 		if !containsElementWithinTol(inds,seed[maxInd],tol){
 			vals = append(vals, val)
@@ -84,6 +93,9 @@ func findMaxima() (float64, float64) {
 		}
 
 		fmt.Println(val, seed[maxInd])
+		serie := plottool.MakeXYs(seed,results)
+		filename := "Results"+fmt.Sprint(it)
+		plottool.PlotSeries([]plotter.XYs{serie},filename)
 		it++
 		if it >= maxit {
 			return val, seed[maxInd]
